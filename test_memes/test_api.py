@@ -1,31 +1,98 @@
+from endpoints.test_data import incorrect_text
+from endpoints.test_data import incorrect_url
+from endpoints.test_data import incorrect_tags
+from endpoints.test_data import incorrect_info
+import pytest
+
+
 def test_delete_a_new_meme(delete_my_meme, new_meme):
     delete_my_meme.delete_meme(new_meme)
-    delete_my_meme.check_status_code()
+    delete_my_meme.check_status_code_200()
+    delete_my_meme.check_delete_meme(new_meme)
 
+def test_no_authorization_for_delete_meme(delete_my_meme, new_meme):
+    delete_my_meme.no_token_for_delete_meme(new_meme)
+    delete_my_meme.check_status_code_401()
+
+def test_incorrect_authorization_for_delete_meme(delete_my_meme, new_meme):
+    delete_my_meme.incorrect_token_for_delete_meme(new_meme)
+    delete_my_meme.check_status_code_401()
+
+def test_empty_authorization_for_delete_meme(delete_my_meme, new_meme):
+    delete_my_meme.empty_token_for_delete_meme(new_meme)
+    delete_my_meme.check_status_code_500()
 
 def test_list_of_all_memes(get_all_memes, new_meme):
-    get_all_memes.get_memes(new_meme)
+    get_all_memes.get_memes()
     get_all_memes.check_object_id(new_meme)
+    get_all_memes.check_status_code_200()
 
+def test_no_authorization_for_get_all_memes(get_all_memes):
+    get_all_memes.no_token_for_get_memes()
+    get_all_memes.check_status_code_401()
+
+def test_incorrect_authorization_for_get_all_memes(get_all_memes):
+    get_all_memes.incorrect_token_for_get_memes()
+    get_all_memes.check_status_code_401()
+
+def test_empty_authorization_for_get_all_memes(get_all_memes):
+    get_all_memes.empty_token_for_get_memes()
+    get_all_memes.check_status_code_500()
 
 def test_get_one_meme(get_new_meme, new_meme):
     get_new_meme.get_one_meme(new_meme)
-    get_new_meme.check_status_code()
+    get_new_meme.check_status_code_200()
     get_new_meme.equal_id(new_meme)
+    get_new_meme.check_text()
 
+def test_no_authorization_for_get_one_meme(get_new_meme, new_meme):
+    get_new_meme.no_token_for_get_memes(new_meme)
+    get_new_meme.check_status_code_401()
 
-def test_update_meme(update_my_meme, new_meme):
-    update_my_meme.update_new_meme(new_meme)
+def test_incorrect_authorization_for_get_one_meme(get_new_meme, new_meme):
+    get_new_meme.incorrect_token_for_get_memes(new_meme)
+    get_new_meme.check_status_code_401()
+
+def test_empty_authorization_for_get_one_meme(get_new_meme, new_meme):
+    get_new_meme.empty_token_for_get_memes(new_meme)
+    get_new_meme.check_status_code_500()
+
+def test_correct_update_meme(update_my_meme, new_meme):
+    update_my_meme.correct_update_new_meme(new_meme)
     update_my_meme.check_text()
-    update_my_meme.check_status_code()
+    update_my_meme.check_status_code_200()
 
+def test_no_authorization_for_update_meme(update_my_meme, new_meme):
+    update_my_meme.no_token_for_update_meme(new_meme)
+    update_my_meme.check_status_code_401()
 
-def test_add_my_meme(add_new_object):
-    body = {
-        "text": "Funny cats",
-        "url": "https://kinpet.ru/upload/webp/iblock/5a9/zqfsks555los2ovnmv2vxwyuchdrm7i9/polosatye_koty_fon_jpg.webp",
-        "tags": ["cats", "boys", "girls"],
-        "info": {"colour": "different", "age": "1-10"}
-    }
-    add_new_object.add_a_meme(payload=body)
-    add_new_object.check_text(body["text"])
+def test_incorrect_authorization_for_update_meme(update_my_meme, new_meme):
+    update_my_meme.incorrect_token_for_update_meme(new_meme)
+    update_my_meme.check_status_code_401()
+
+def test_empty_authorization_for_update_meme(update_my_meme, new_meme):
+    update_my_meme.empty_token_for_update_meme(new_meme)
+    update_my_meme.check_status_code_500()
+
+def test_add_correct_meme(add_new_object, new_meme):
+    add_new_object.check_body_text()
+    add_new_object.check_url()
+    add_new_object.check_tags()
+    add_new_object.check_info()
+
+def test_no_authorization_for_add_correct_meme(add_new_object):
+    add_new_object.no_token_for_add_a_new_meme()
+    add_new_object.check_status_code_401()
+
+def test_incorrect_authorization_for_add_correct_meme(add_new_object):
+    add_new_object.incorrect_token_for_add_a_new_meme()
+    add_new_object.check_status_code_401()
+
+def test_empty_authorization_for_add_correct_meme(add_new_object):
+    add_new_object.empty_token_for_add_a_new_meme()
+    add_new_object.check_status_code_500()
+
+@pytest.mark.parametrize("incorrect_data", [incorrect_text, incorrect_url, incorrect_tags, incorrect_info])
+def test_add_incorrect_meme(add_new_object, incorrect_data):
+    add_new_object.add_an_incorrect_meme(incorrect_data)
+    add_new_object.check_status_code_400()
