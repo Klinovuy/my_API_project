@@ -5,7 +5,7 @@ from endpoints.get_all_memes import AllMemes
 from endpoints.get_one_meme import GetMeme
 from endpoints.update_meme import UpdateMeme
 from endpoints.delete_meme import DeleteMeme
-from endpoints.endpoints import Endpoint
+from endpoints.token import Token
 
 
 @pytest.fixture()
@@ -30,17 +30,11 @@ def delete_my_meme():
 
 @pytest.fixture()
 def check_authorize():
-    return Endpoint()
+    return Token()
 
 @pytest.fixture()
-def new_meme(add_new_object, get_new_meme, delete_my_meme):
-    payload = {
-        "text": "Funny cats",
-        "url": "https://kinpet.ru/upload/webp/iblock/5a9/zqfsks555los2ovnmv2vxwyuchdrm7i9/polosatye_koty_fon_jpg.webp",
-        "tags": ["cats", "boys", "girls"],
-        "info": {"colour": "different", "age": "1-10"}
-    }
-    add_new_object.add_a_meme(payload)
+def new_meme(add_new_object, delete_my_meme):
+    add_new_object.add_a_correct_meme()
     yield add_new_object.object_id
     if delete_my_meme.delete_meme(new_meme=add_new_object.object_id).status_code == 404:
         print('Мем удалён ранее')
