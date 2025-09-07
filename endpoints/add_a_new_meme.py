@@ -7,10 +7,6 @@ import allure
 
 class AddMeme(Token, Endpoint):
     object_id = None
-    text = None
-    url_meme = None
-    tags = None
-    info = None
     bad_object_id = None
 
     @allure.step('Check adding a correct meme')
@@ -24,22 +20,6 @@ class AddMeme(Token, Endpoint):
             self.tags = self.response.json()["tags"]
             self.info = self.response.json()["info"]
         return self.response
-
-    @allure.step('Check equal text')
-    def check_body_text(self):
-        assert self.text == payload["text"]
-
-    @allure.step('Check equal url')
-    def check_url(self):
-        assert self.url_meme == payload["url"]
-
-    @allure.step('Check equal tags')
-    def check_tags(self):
-        assert self.tags == payload["tags"]
-
-    @allure.step('Check equal info')
-    def check_info(self):
-        assert self.info == payload["info"]
 
     @allure.step('Check impossible adding an incorrect meme')
     def add_an_incorrect_meme(self, incorrect_data):

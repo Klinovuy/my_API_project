@@ -12,8 +12,11 @@ class GetMeme(Token, Endpoint):
     @allure.step('Check getting one meme')
     def get_one_meme(self, new_meme):
         self.response = requests.get(f'{self.url}/{self.for_all_memes}/{new_meme}', headers=self.headers)
-        self.my_object_id = self.response.json()["id"]
-        self.text = self.response.json()["text"]
+        if self.response.status_code == 404:
+            pass
+        else:
+            self.my_object_id = self.response.json()["id"]
+            self.text = self.response.json()["text"]
         return self.response
 
     @allure.step('Check equal id')

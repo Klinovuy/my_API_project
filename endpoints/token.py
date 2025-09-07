@@ -40,7 +40,7 @@ class Token(Endpoint):
             return self.response
 
     @allure.step('Check equal text')
-    def check_text(self):
+    def check_text_correct_token(self):
         assert self.response.text == f'Token is alive. Username is {self.body["name"]}', f'Not {self.body["name"]}'
 
     @allure.step('Check equal user name')
@@ -75,3 +75,13 @@ class Token(Endpoint):
         else:
             self.response = requests.get(f'{self.url}/{self.for_all_memes}', headers=self.empty_headers)
         return self.response.status_code
+
+    @allure.step('Check impossible getting token with empty body')
+    def empty_body_for_get_token(self):
+        self.response = requests.post(f'{self.url}/{self.my_authorize}/')
+        return self.response.status_code
+
+    @allure.step('Check equal token from file and token from endpoint')
+    def token_from_file_and_token_from_endpoint_is_equal(self):
+        with open(self.token_path, 'r') as token_check:
+            assert self.my_token == token_check.read().strip(), 'Not equal tokens'

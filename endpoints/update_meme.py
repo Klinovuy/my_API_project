@@ -8,7 +8,7 @@ from endpoints.test_data import incorrect_tags
 
 
 class UpdateMeme(Token, Endpoint):
-    text = None
+    object_id = None
 
     @allure.step('Check updating new meme')
     def correct_update_new_meme(self, new_meme):
@@ -18,12 +18,16 @@ class UpdateMeme(Token, Endpoint):
             json=update_payload,
             headers=self.headers
         )
+        self.object_id = self.response.json()["id"]
         self.text = self.response.json()["text"]
+        self.url_meme = self.response.json()["url"]
+        self.tags = self.response.json()["tags"]
+        self.info = self.response.json()["info"]
         return self.response
 
-    @allure.step('Check equal text')
-    def check_text(self):
-        assert self.text == update_payload["text"]
+    @allure.step('Check equal object id')
+    def check_object_id(self):
+        assert self.object_id == str(update_payload["id"])
 
     @allure.step('Check impossible updating a meme with incorrect tags')
     def incorrect_update_new_meme(self, new_meme):
